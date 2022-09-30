@@ -4,12 +4,13 @@
 // @name:zh-TW   Twitter 圖像查看增強
 // @icon         https://twitter.com/favicon.ico
 // @namespace    https://moe.best/
-// @version      1.2.3
+// @version      1.2.4
 // @description        Make Twitter photo viewing more humane
 // @description:zh-CN  让推特图片浏览更加人性化
 // @description:zh-TW  讓 Twitter 照片瀏覽更人性化
 // @author       Jindai Kirin
 // @include      https://twitter.com/*
+// @include      https://mobile.twitter.com/*
 // @license      MIT
 // @grant        GM_addStyle
 // @grant        GM_getValue
