@@ -2,7 +2,7 @@
 // @name         Bilibili 哔哩哔哩查看原图
 // @icon         https://t.bilibili.com/favicon.ico
 // @namespace    https://lolico.moe/
-// @version      2.3.4
+// @version      2.3.5
 // @description  方便在B站内查看各种图片的原图，支持动态、专栏
 // @author       Jindai Kirin
 // @match        https://t.bilibili.com/*
@@ -60,27 +60,19 @@
   } else if (location.href.startsWith('https://www.bilibili.com/read/')) {
     GM_addStyle('img.normal-img,.card-image__image{cursor:pointer}');
     // 专栏图片点击打开原图
-    $('img.normal-img').each(function () {
-      const $img = $(this);
-      $img.on('click', () => {
-        window.open($img.attr('src').replace(/@.*?$/, ''));
-      });
-      $img.attr('title', '点击打开原图');
+    $(document.body).on('click', 'img.normal-img', function () {
+      window.open($(this).attr('src').replace(/@.*?$/, ''));
     });
     // 专栏头图点击打开原图
-    $('.card-image__image').each(function () {
-      const $div = $(this);
-      $div.on('click', () => {
-        window.open(
-          $div
-            .css('background-image')
-            .replace(/^url\(["']?/, '')
-            .replace(/["']?\)$/, '')
-            .replace(/@.*?$/, ''),
-          '_blank'
-        );
-      });
-      $div.attr('title', '点击打开原图');
+    $(document.body).on('click', '.card-image__image', function () {
+      window.open(
+        $(this)
+          .css('background-image')
+          .replace(/^url\(["']?/, '')
+          .replace(/["']?\)$/, '')
+          .replace(/@.*?$/, ''),
+        '_blank'
+      );
     });
   }
 
