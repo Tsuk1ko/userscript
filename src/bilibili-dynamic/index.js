@@ -2,7 +2,7 @@
 // @name         Bilibili 哔哩哔哩阻止动态点击正文跳转
 // @icon         https://t.bilibili.com/favicon.ico
 // @namespace    https://lolicon.app/
-// @version      1.1.3
+// @version      1.1.4
 // @description  阻止动态点击正文跳转动态页面
 // @author       Jindai Kirin
 // @match        https://t.bilibili.com/*
@@ -19,12 +19,14 @@
   );
 
   const contentClassList = [
+    'bili-rich-text',
     'bili-rich-text__content',
     'content-full',
     'content-ellipsis',
     'content',
   ];
   const skipClassList = [
+    'bili-rich-text__action',
     'bili-rich-text-module',
     'bili-rich-text-link',
     'bili-rich-text-topic',
