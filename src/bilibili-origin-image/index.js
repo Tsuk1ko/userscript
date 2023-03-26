@@ -2,7 +2,7 @@
 // @name         Bilibili 哔哩哔哩查看原图
 // @icon         https://t.bilibili.com/favicon.ico
 // @namespace    https://lolico.moe/
-// @version      2.3.5
+// @version      2.3.6
 // @description  方便在B站内查看各种图片的原图，支持动态、专栏
 // @author       Jindai Kirin
 // @match        https://t.bilibili.com/*
@@ -17,6 +17,8 @@
 (function () {
   'use strict';
 
+  const nextTick = () => new Promise(resolve => setTimeout(resolve));
+
   if (location.hostname === 't.bilibili.com' || location.hostname === 'space.bilibili.com') {
     // 添加查看原图按钮
     document.addEventListener(
@@ -24,15 +26,19 @@
       async ({ target }) => {
         const $target = $(target);
         // new
-        if ($target.hasClass('bili-album__preview__picture__img')) {
+        if (
+          $target.hasClass('bili-album__preview__picture__img') ||
+          $target.parent().hasClass('b-img__inner')
+        ) {
           const $imagesbox = $target.parents('.bili-album');
+          await nextTick();
           if ($imagesbox.find('.bili-album__watch__control__option.raw-image').length) return;
           const $btn = $imagesbox.find('.bili-album__watch__control__option.full-screen');
           const $newBtn = $($btn.prop('outerHTML').replace('大', '原'));
           $newBtn.addClass('raw-image');
           $newBtn.on('click', () => {
             window.open(
-              $imagesbox.find('.bili-album__watch__content img').attr('src').replace(/@.*?$/, ''),
+              $imagesbox.find('.bili-album__watch__content img').attr('src').replace(/@.*$/, ''),
               '_blank'
             );
           });
