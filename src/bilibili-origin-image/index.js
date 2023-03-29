@@ -2,11 +2,12 @@
 // @name         Bilibili 哔哩哔哩查看原图
 // @icon         https://t.bilibili.com/favicon.ico
 // @namespace    https://lolico.moe/
-// @version      2.3.6
+// @version      2.4.0
 // @description  方便在B站内查看各种图片的原图，支持动态、专栏
 // @author       Jindai Kirin
 // @match        https://t.bilibili.com/*
 // @match        https://space.bilibili.com/*
+// @match        https://www.bilibili.com/opus/*
 // @match        https://www.bilibili.com/read/*
 // @license      GPL-3.0
 // @grant        GM_addStyle
@@ -17,9 +18,11 @@
 (function () {
   'use strict';
 
-  const nextTick = () => new Promise(resolve => setTimeout(resolve));
-
-  if (location.hostname === 't.bilibili.com' || location.hostname === 'space.bilibili.com') {
+  if (
+    location.hostname === 't.bilibili.com' ||
+    location.hostname === 'space.bilibili.com' ||
+    (location.hostname === 'www.bilibili.com' && location.pathname.startsWith('/opus/'))
+  ) {
     // 添加查看原图按钮
     document.addEventListener(
       'click',
@@ -30,15 +33,18 @@
           $target.hasClass('bili-album__preview__picture__img') ||
           $target.parent().hasClass('b-img__inner')
         ) {
-          const $imagesbox = $target.parents('.bili-album');
-          await nextTick();
-          if ($imagesbox.find('.bili-album__watch__control__option.raw-image').length) return;
-          const $btn = $imagesbox.find('.bili-album__watch__control__option.full-screen');
+          const $album = $target.parents('.bili-album');
+          const $btn = await waitBtn(
+            $album,
+            '.bili-album__watch__control__option.full-screen',
+            '.bili-album__watch'
+          );
+          if ($btn.length > 1) return;
           const $newBtn = $($btn.prop('outerHTML').replace('大', '原'));
           $newBtn.addClass('raw-image');
           $newBtn.on('click', () => {
             window.open(
-              $imagesbox.find('.bili-album__watch__content img').attr('src').replace(/@.*$/, ''),
+              $album.find('.bili-album__watch__content img').attr('src').replace(/@.*$/, ''),
               '_blank'
             );
           });
@@ -47,7 +53,7 @@
         // old
         else if ($target.hasClass('img-content')) {
           const $imagesbox = $('.imagesbox:hover');
-          const $btn = await waitViewBtn($imagesbox);
+          const $btn = await waitBtn($imagesbox, '.bp-v-middle:contains(查看大图)', '.boost-wrap');
           const $newBtn = $($btn.prop('outerHTML').replace('大', '原'));
           $newBtn.on('click', () => {
             window.open(
@@ -63,7 +69,7 @@
       },
       { capture: true }
     );
-  } else if (location.href.startsWith('https://www.bilibili.com/read/')) {
+  } else if (location.hostname === 'www.bilibili.com' && location.pathname.startsWith('/read/')) {
     GM_addStyle('img.normal-img,.card-image__image{cursor:pointer}');
     // 专栏图片点击打开原图
     $(document.body).on('click', 'img.normal-img', function () {
@@ -84,24 +90,26 @@
 
   /**
    * 等待查看大图按钮出现
-   * @param {JQuery<HTMLElement>} $imagesbox
+   * @param {JQuery<HTMLElement>} $el
+   * @param {string} btnSelector
+   * @param {string} waitNodeSelector
    * @returns {JQuery<HTMLElement>}
    */
-  function waitViewBtn($imagesbox) {
+  function waitBtn($el, btnSelector, waitNodeSelector) {
     return new Promise(resolve => {
-      const $btn = $imagesbox.find('.bp-v-middle:contains(查看大图)');
+      const $btn = $el.find(btnSelector);
       if ($btn.length > 0) {
         resolve($btn);
         return;
       }
       new MutationObserver((mutations, self) => {
         mutations.forEach(({ addedNodes }) => {
-          if (addedNodes.length > 0 && addedNodes[0].className === 'boost-wrap') {
+          if (addedNodes.length && $(addedNodes[0]).is(waitNodeSelector)) {
             self.disconnect();
-            resolve($imagesbox.find('.bp-v-middle:contains(查看大图)'));
+            resolve($el.find(btnSelector));
           }
         });
-      }).observe($imagesbox[0], { childList: true });
+      }).observe($el[0], { childList: true });
     });
   }
 })();
