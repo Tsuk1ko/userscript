@@ -1,6 +1,7 @@
 {
   "private": true,
   "devDependencies": {
-    "@types/jquery": "^3.5.14"
+    "@types/jquery": "^3.5.29",
+    "@types/tampermonkey": "^5.0.2"
   }
 }
