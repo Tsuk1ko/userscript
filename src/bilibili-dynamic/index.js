@@ -2,7 +2,7 @@
 // @name         Bilibili 哔哩哔哩阻止动态点击正文跳转
 // @icon         https://t.bilibili.com/favicon.ico
 // @namespace    https://lolicon.app/
-// @version      1.1.5
+// @version      1.1.6
 // @description  阻止动态点击正文跳转动态页面
 // @author       Jindai Kirin
 // @match        https://t.bilibili.com/*
@@ -18,9 +18,13 @@
 
   css`
     .description.active,
-    *:not(.bili-dyn-content__orig.reference) > .bili-dyn-content__orig__desc,
-    .bili-dyn-content__forw__desc,
-    .dyn-card-opus__summary {
+    .bili-dyn-content__orig__desc:not(
+        .bili-dyn-content__orig.reference .bili-dyn-content__orig__desc
+      ),
+    .dyn-card-opus__summary:not(.bili-dyn-content__orig.reference .dyn-card-opus__summary):not(
+        .dyn-card-opus__title + .dyn-card-opus__summary
+      ),
+    .bili-dyn-content__forw__desc {
       cursor: unset !important;
     }
     .bili-rich-text-emoji {
