@@ -2,12 +2,9 @@
 // @name         Bilibili 哔哩哔哩查看原图
 // @icon         https://t.bilibili.com/favicon.ico
 // @namespace    https://lolico.moe/
-// @version      3.0.0
-// @description  方便在B站内查看各种图片的原图，仅处理专栏，动态中官方提供的“查看大图”已经为原图
+// @version      3.0.1
+// @description  方便在B站内查看各种图片的原图，目前仅处理专栏，动态中官方提供的“查看大图”已经为原图
 // @author       Jindai Kirin
-// @match        https://t.bilibili.com/*
-// @match        https://space.bilibili.com/*
-// @match        https://www.bilibili.com/opus/*
 // @match        https://www.bilibili.com/read/*
 // @license      GPL-3.0
 // @grant        GM_addStyle
