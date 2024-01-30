@@ -2,7 +2,7 @@
 // @name         Bilibili AntiBV
 // @icon         https://www.bilibili.com/favicon.ico
 // @namespace    https://moe.best/
-// @version      1.9.2
+// @version      1.9.3
 // @description  自动在地址栏中将 bv 还原为 av，非重定向，不会导致页面刷新，顺便清除 search string 中所有无用参数
 // @author       神代绮凛
 // @include      /^https:\/\/www\.bilibili\.com\/(s\/)?video\/[BbAa][Vv]/
@@ -86,7 +86,8 @@
 
     let r = 0;
     for (let i = 0; i < pos.length; i++) r += table[bv[pos[i]]] * 58 ** i;
-    return (r - 8728348608) ^ 177451812;
+    const result = (r - 8728348608) ^ 177451812;
+    return result < 0 ? 2147483648 + result : result;
   };
 
   const purgeSearchString = search => {
