@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Bilibili 视频点踩
+// @name         Bilibili 哔哩哔哩视频点踩
 // @namespace    https://github.com/Tsuk1ko
 // @version      1.0.0
 // @description  为视频页面增加点踩选项，在视频下方工具栏最右边更多菜单中
