@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Bilibili 哔哩哔哩视频点踩
 // @namespace    https://github.com/Tsuk1ko
-// @version      1.0.0
+// @version      1.0.1
 // @description  为视频页面增加点踩选项，在视频下方工具栏最右边更多菜单中
 // @author       神代綺凛
 // @license      GPL-3.0
@@ -454,12 +454,12 @@
     );
     dislikeIcon.classList.replace('video-like-icon', 'video-dislike-icon');
 
-    const rightItem = await waitSelector('.video-complaint.video-toolbar-right-item');
+    const rightItem = await waitSelector('.video-use-phone.video-toolbar-right-item');
     /** @type {HTMLElement} */
     const dislikeBtn = rightItem.cloneNode(true);
-    dislikeBtn.classList.replace('video-complaint', 'video-dislike');
+    dislikeBtn.classList.replace('video-use-phone', 'video-dislike');
     const text = dislikeBtn.querySelector('.video-toolbar-item-text');
-    text.classList.remove('video-use-phone-info');
+    text.classList.replace('video-use-phone-info', 'video-dislike-info');
     text.innerHTML = '不喜欢';
     dislikeBtn.addEventListener('click', async () => {
       const { code, message } = await dislike();
@@ -479,6 +479,6 @@
       }
     });
     dislikeBtn.querySelector('svg').replaceWith(dislikeIcon);
-    rightItem.after(dislikeBtn);
+    rightItem.parentElement.append(dislikeBtn);
   });
 })();
