@@ -361,12 +361,6 @@
   const css = ([style]) => GM_addStyle(style);
 
   css`
-    .video-dislike.on {
-      color: var(--brand_blue);
-    }
-    .video-dislike.on .video-dislike-icon {
-      color: inherit !important;
-    }
     .video-dislike-icon {
       transform: scaleY(-1);
     }

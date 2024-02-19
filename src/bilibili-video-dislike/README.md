@@ -12,4 +12,4 @@
 
 获取 access_key 使用了 [lzghzr/TampermonkeyJS 中的工具](https://github.com/lzghzr/TampermonkeyJS/blob/master/libBilibiliToken/libBilibiliToken.js)，获取时会收到一条扫码登录通知
 
-若更换帐号或其他原因需要重新获取 access_key，请点击脚本菜单中的“重置 access_key”
+若更换帐号或其他原因需要重新获取 access\_key，请点击脚本菜单中的“重置 access\_key”
