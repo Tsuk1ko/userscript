@@ -2,7 +2,7 @@
 // @name         Bilibili AntiBV
 // @icon         https://www.bilibili.com/favicon.ico
 // @namespace    https://moe.best/
-// @version      1.9.3
+// @version      1.9.4
 // @description  自动在地址栏中将 bv 还原为 av，非重定向，不会导致页面刷新，顺便清除 search string 中所有无用参数
 // @author       神代绮凛
 // @include      /^https:\/\/www\.bilibili\.com\/(s\/)?video\/[BbAa][Vv]/
@@ -73,22 +73,46 @@
     const lastPath = last(pathname.split('/').filter(v => v));
     return /^bv/i.test(lastPath) ? lastPath : null;
   };
-  const getUrl = id => `/video/${id}${purgeSearchString(location.search)}${location.hash}`;
+  const getUrl = id => `/video/${id}/${purgeSearchString(location.search)}${location.hash}`;
 
-  // https://www.zhihu.com/question/381784377/answer/1099438784
-  const bv2av = bv => {
-    if (!bv) return;
-
-    const pos = [11, 10, 3, 8, 4, 6];
-    const base = 'fZodR9XQDSUm21yCkr6zBqiveYah8bt4xsWpHnJE7jL5VG3guMTKNPAwcF';
+  // https://github.com/mrhso/IshisashiWebsite/blob/master/%E4%B9%B1%E5%86%99%E7%A8%8B%E5%BC%8F/BV%20%E5%8F%B7%E8%B7%8B%E6%89%88%E3%80%80%EF%BD%9E%20Who%20done%20it!.js
+  const bv2av = (() => {
+    const charset = 'FcwAPNKTMug3GV5Lj7EJnHpWsx4tb8haYeviqBz6rkCy12mUSDQX9RdoZf';
+    const bvReg = new RegExp(`^[Bb][Vv]1[${charset}]{9}$`);
+    const base = BigInt(charset.length);
     const table = {};
-    for (let i = 0; i < base.length; i++) table[base[i]] = i;
+    for (let i = 0; i < charset.length; i++) table[charset[i]] = i;
+    const xor = 23442827791579n;
+    const rangeLeft = 1n;
+    const rangeRight = 2n ** 51n;
 
-    let r = 0;
-    for (let i = 0; i < pos.length; i++) r += table[bv[pos[i]]] * 58 ** i;
-    const result = (r - 8728348608) ^ 177451812;
-    return result < 0 ? 2147483648 + result : result;
-  };
+    /**
+     * @param {string} bv
+     */
+    return bv => {
+      if (!bvReg.test(bv)) {
+        throw new Error(`Unexpected bv: ${bv}`);
+      }
+
+      const chars = bv.split('');
+      [chars[3], chars[9]] = [chars[9], chars[3]];
+      [chars[4], chars[7]] = [chars[7], chars[4]];
+
+      let result = 0n;
+      for (let i = 3; i < 12; i++) {
+        result = result * base + BigInt(table[chars[i]]);
+      }
+      if (result < rangeRight || result >= rangeRight * 2n) {
+        throw new RangeError(`Unexpected av result: ${result}`);
+      }
+      result = result % rangeRight ^ xor;
+      if (result < rangeLeft) {
+        throw new RangeError(`Unexpected av result: ${result}`);
+      }
+
+      return result;
+    };
+  })();
 
   const purgeSearchString = search => {
     const { p, t } = simpleQueryString.parse(search);
