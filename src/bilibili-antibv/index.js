@@ -2,7 +2,7 @@
 // @name         Bilibili AntiBV
 // @icon         https://www.bilibili.com/favicon.ico
 // @namespace    https://moe.best/
-// @version      1.9.4
+// @version      1.9.5
 // @description  自动在地址栏中将 bv 还原为 av，非重定向，不会导致页面刷新，顺便清除 search string 中所有无用参数
 // @author       神代绮凛
 // @include      /^https:\/\/www\.bilibili\.com\/(s\/)?video\/[BbAa][Vv]/
@@ -73,7 +73,7 @@
     const lastPath = last(pathname.split('/').filter(v => v));
     return /^bv/i.test(lastPath) ? lastPath : null;
   };
-  const getUrl = id => `/video/${id}/${purgeSearchString(location.search)}${location.hash}`;
+  const getUrl = id => `/video/${id}${purgeSearchString(location.search)}${location.hash}`;
 
   // https://github.com/mrhso/IshisashiWebsite/blob/master/%E4%B9%B1%E5%86%99%E7%A8%8B%E5%BC%8F/BV%20%E5%8F%B7%E8%B7%8B%E6%89%88%E3%80%80%EF%BD%9E%20Who%20done%20it!.js
   const bv2av = (() => {
