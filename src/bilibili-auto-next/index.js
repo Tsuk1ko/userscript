@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Bilibili 哔哩哔哩自动切P
 // @namespace    https://github.com/Tsuk1ko
-// @version      1.0.6
+// @version      1.0.7
 // @description  为什么要单独写个脚本呢？因为自动连播就是个傻逼……
 // @author       神代綺凛
 // @license      GPL-3.0
@@ -24,8 +24,7 @@
   const get = (obj, paths) =>
     paths.reduce((prev, path) => (typeof prev === 'undefined' ? undefined : prev[path]), obj);
 
-  const initPlayer = () => {
-    const { player } = win;
+  const initPlayer = player => {
     if (!player) return;
     playerVideoEndedEvents.forEach(event => {
       player.on(event, onVideoEnded);
@@ -46,12 +45,26 @@
     }
   };
 
-  Object.defineProperty(win, 'player', {
-    configurable: true,
-    set: player => {
-      delete win.player;
-      win.player = player;
-      initPlayer();
-    },
-  });
+  const waitWinProperty = (name, timeout = 10000) =>
+    new Promise((resolve, reject) => {
+      const val = win[name];
+      if (val) {
+        resolve(val);
+        return;
+      }
+      const timeoutTimer = setTimeout(() => {
+        clearInterval(timer);
+        reject();
+      }, timeout);
+      const timer = setInterval(() => {
+        const val = win[name];
+        if (val) {
+          clearTimeout(timeoutTimer);
+          clearInterval(timer);
+          resolve(val);
+        }
+      }, 200);
+    });
+
+  waitWinProperty('player').then(initPlayer);
 })();
