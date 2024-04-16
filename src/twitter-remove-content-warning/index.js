@@ -4,7 +4,7 @@
 // @name:zh-TW   Twitter 移除内容警告
 // @icon         https://twitter.com/favicon.ico
 // @namespace    https://github.com/Tsuk1ko
-// @version      1.0.0
+// @version      1.0.1
 // @description        Remove twitter content warning
 // @description:zh-CN  移除 twitter 的敏感内容警告
 // @description:zh-TW  移除 twitter 的敏感内容警告
@@ -60,13 +60,19 @@
   };
 
   const rule = await waitValue(findBlurCssRule);
-  if (!rule) return;
-
-  rule.style.filter = '';
+  if (!rule) {
+    console.warn('[trcw] css rule not found');
+    return;
+  }
 
   css`
+    ${rule.selectorText} {
+      filter: none !important;
+    }
     ${rule.selectorText} + div {
-      display: none;
+      display: none !important;
     }
   `;
+
+  console.log('[trcw] done', rule.selectorText);
 })();
