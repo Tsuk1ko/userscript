@@ -4,7 +4,7 @@
 // @name:zh-TW   Twitter 圖像查看增強
 // @icon         https://twitter.com/favicon.ico
 // @namespace    https://moe.best/
-// @version      1.2.4
+// @version      1.3.0
 // @description        Make Twitter photo viewing more humane
 // @description:zh-CN  让推特图片浏览更加人性化
 // @description:zh-TW  讓 Twitter 照片瀏覽更人性化
@@ -28,8 +28,8 @@
 
   // 滑动切换图片
   let enableDragToSwitch = GM_getValue('enableDragToSwitch', false);
-  GM_registerMenuCommand('Drag to swtich images', () => {
-    enableDragToSwitch = confirm(`Do you want to enable drag to swtich images?
+  GM_registerMenuCommand('Drag to switch images', () => {
+    enableDragToSwitch = confirm(`Do you want to enable drag to switch images?
 Current: ${enableDragToSwitch ? 'Enabled' : 'Disabled'}
 
 Please refresh to take effect after modification.`);
@@ -79,12 +79,21 @@ Please refresh to take effect after modification.`);
   const prevImg = () => clickBtn('prev');
   const nextImg = () => clickBtn('next');
 
-  window.addEventListener('wheel', ({ deltaY, target: { tagName, baseURI } }) => {
-    if (tagName == 'IMG' && /\/photo\//.test(baseURI)) {
-      if (deltaY < 0) prevImg();
-      else if (deltaY > 0) nextImg();
-    }
-  });
+  /**
+   * @param {HTMLElement} el
+   */
+  const isTwitterImg = el => el.tagName == 'IMG' && el.baseURI.includes('/photo/');
+
+  window.addEventListener(
+    'wheel',
+    ({ deltaY, target }) => {
+      if (isTwitterImg(target) || target.dataset.testid === 'swipe-to-dismiss') {
+        if (deltaY < 0) prevImg();
+        else if (deltaY > 0) nextImg();
+      }
+    },
+    { passive: true }
+  );
 
   if (enableDragToSwitch) {
     let x = 0;
@@ -95,8 +104,8 @@ Please refresh to take effect after modification.`);
     });
     window.addEventListener(
       'mouseup',
-      ({ button, clientX, clientY, target: { tagName, baseURI } }) => {
-        if (button !== 0 || !(tagName == 'IMG' && /\/photo\//.test(baseURI))) return;
+      ({ button, clientX, clientY, target }) => {
+        if (button !== 0 || !isTwitterImg(target)) return;
         const [sx, sy] = [clientX - x, clientY - y].map(Math.abs);
         const mx = clientX - x;
         if (sx <= 10 && sy <= 10) closeImgView();
@@ -104,20 +113,18 @@ Please refresh to take effect after modification.`);
           if (mx > 0) prevImg();
           else if (mx < 0) nextImg();
         }
-      }
+      },
+      { passive: true }
     );
   } else {
     document.addEventListener(
       'click',
       e => {
-        const {
-          target: { tagName, baseURI },
-        } = e;
-        if (!(tagName == 'IMG' && /\/photo\//.test(baseURI))) return;
+        if (!isTwitterImg(e.target)) return;
         closeImgView();
         e.stopPropagation();
       },
-      { capture: true }
+      { capture: true, passive: true }
     );
   }
 })();
