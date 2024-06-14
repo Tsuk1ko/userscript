@@ -8,7 +8,7 @@ You can enable it in script menu.
 
 Due to some complex reasons, drag to switch images only support for webkit-based browser.
 
-## About "Set aria-label"
+### About "Set aria-label"
 
 v1.0.0 is an major update, usually you will no longer need to set up aria-label and it support all languages.
 
