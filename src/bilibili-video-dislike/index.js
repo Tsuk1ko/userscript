@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Bilibili 哔哩哔哩视频点踩
 // @namespace    https://github.com/Tsuk1ko
-// @version      1.0.1
+// @version      1.0.2
 // @description  为视频页面增加点踩选项，在视频下方工具栏最右边更多菜单中
 // @author       神代綺凛
 // @license      GPL-3.0
@@ -368,14 +368,17 @@
 
   const client = new BilibiliToken();
 
-  const accessKey = await (async () => {
+  let accessKey = '';
+  (async () => {
     const saved = GM_getValue('access_key');
-    if (saved) return saved;
+    if (saved) {
+      accessKey = saved;
+      return;
+    }
     const data = await client.getToken();
-    console.warn('data', data);
     const val = data?.access_token;
     if (val) GM_setValue('access_key', val);
-    return val;
+    accessKey = val;
   })();
 
   const queryStringify = data =>
@@ -385,7 +388,7 @@
 
   const dislike = async (isCancel = false) => {
     if (!accessKey) {
-      alert('access_key 未成功获取，功能不可用');
+      alert('access_key 尚未成功获取，功能不可用');
       throw new Error('no access_key');
     }
     const params = BilibiliToken.signQuery(
