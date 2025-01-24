@@ -2,7 +2,7 @@
 // @name         Bilibili 哔哩哔哩阻止动态点击正文跳转
 // @icon         https://t.bilibili.com/favicon.ico
 // @namespace    https://lolicon.app/
-// @version      1.1.7
+// @version      1.1.8
 // @description  阻止动态点击正文跳转动态页面
 // @author       Jindai Kirin
 // @match        https://t.bilibili.com/*
@@ -21,9 +21,7 @@
     .bili-dyn-content__orig__desc:not(
         .bili-dyn-content__orig.reference .bili-dyn-content__orig__desc
       ),
-    .dyn-card-opus__summary:not(.bili-dyn-content__orig.reference .dyn-card-opus__summary):not(
-        .dyn-card-opus__title + .dyn-card-opus__summary
-      ),
+    .dyn-card-opus__summary:not(.bili-dyn-content__orig.reference .dyn-card-opus__summary),
     .bili-dyn-content__forw__desc {
       cursor: unset !important;
     }
@@ -36,43 +34,37 @@
     }
   `;
 
-  const contentClassList = [
-    'bili-rich-text',
-    'bili-rich-text__content',
-    'content-full',
-    'content-ellipsis',
-    'content',
-  ];
-  const skipClassList = [
-    'bili-rich-text__action',
-    'bili-rich-text-module',
-    'bili-rich-text-link',
-    'bili-rich-text-topic',
-    'bili-rich-text-viewpic',
-    'dynamic-link-hover-bg',
-  ];
+  const contentSelector = [
+    '.bili-rich-text',
+    '.bili-rich-text__content',
+    '.content-full',
+    '.content-ellipsis',
+    '.content',
+  ].join(',');
+  const skipSelector = [
+    '.bili-rich-text__action',
+    '.bili-rich-text-module',
+    '.bili-rich-text-link',
+    '.bili-rich-text-topic',
+    '.bili-rich-text-viewpic',
+    '.dynamic-link-hover-bg',
+  ].join(',');
 
   /**
    * @param {HTMLElement} element
    * @param {string} className
    */
   const hasClass = (element, className) => element.classList.contains(className);
-  /**
-   * @param {HTMLElement} element
-   * @param {string[]} classNameList
-   */
-  const hasSomeClass = (element, classNameList) =>
-    classNameList.some(className => hasClass(element, className));
 
   /**
    * @param {HTMLElement} element
    */
   const isContentElement = element =>
-    hasSomeClass(element, contentClassList) && !hasClass(element.parentElement, 'user-panel');
+    element.matches(contentSelector) && !hasClass(element.parentElement, 'user-panel');
   /**
    * @param {HTMLElement} element
    */
-  const isSkipElement = element => hasSomeClass(element, skipClassList);
+  const isSkipElement = element => element.matches(skipSelector);
   /**
    * @param {HTMLElement} element
    */
@@ -106,7 +98,7 @@
       // 转发内容不处理，因为现在无法通过页面元素得到 dynamic id
       for (const ele of path) {
         if (ele.nodeName === 'BODY') break;
-        if (hasClass(ele, 'bili-dyn-content__orig') && hasClass(ele, 'reference')) return;
+        if (ele.matches('.bili-dyn-content__orig.reference')) return;
       }
       // 阻止点击正文跳转到动态页面
       if (isContentElement($el) || isContentElement(path[1])) {
