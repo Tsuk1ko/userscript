@@ -2,11 +2,12 @@
 // @name         Bilibili 哔哩哔哩阻止动态点击正文跳转
 // @icon         https://t.bilibili.com/favicon.ico
 // @namespace    https://lolicon.app/
-// @version      1.1.8
+// @version      1.1.9
 // @description  阻止动态点击正文跳转动态页面
 // @author       Jindai Kirin
 // @match        https://t.bilibili.com/*
 // @match        https://space.bilibili.com/*
+// @match        https://www.bilibili.com/v/topic/detail/*
 // @license      MIT
 // @grant        GM_addStyle
 // ==/UserScript==
