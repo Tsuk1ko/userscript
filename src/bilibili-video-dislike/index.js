@@ -1,12 +1,13 @@
 // ==UserScript==
 // @name         Bilibili 哔哩哔哩视频点踩
 // @namespace    https://github.com/Tsuk1ko
-// @version      1.0.2
+// @version      2.0.0
 // @description  为视频页面增加点踩选项，在视频下方工具栏最右边更多菜单中
 // @author       神代綺凛
 // @license      GPL-3.0
 // @match        https://www.bilibili.com/video/*
 // @icon         https://www.bilibili.com/favicon.ico
+// @require      https://registry.npmmirror.com/qrcodejs/1.0.0/files/qrcode.min.js
 // @connect      passport.bilibili.com
 // @connect      app.bilibili.com
 // @grant        GM_addStyle
@@ -25,8 +26,8 @@
   // https://github.com/lzghzr/TampermonkeyJS/blob/master/libBilibiliToken/libBilibiliToken.js
   class BilibiliToken {
     static _W = typeof unsafeWindow === 'undefined' ? window : unsafeWindow;
-    static __loginSecretKey = '2653583c8873dea268ab9386918b1d65';
-    static loginAppKey = '783bbb7264451d82';
+    static __loginSecretKey = '59b43e04ad6965f34319062b478f83dd';
+    static loginAppKey = '4409e2ce8ffd12b8';
     static __secretKey = '560c52ccd288fed045859ed18bffd973';
     static appKey = '1d8b6e7d45233436';
     build = '6720300';
@@ -50,7 +51,7 @@
       buvid: this.buvid,
     };
     get loginQuery() {
-      return `appkey=${BilibiliToken.loginAppKey}&build=${this.build}&c_locale=${this.Clocale}&channel=${this.channel}&local_id=${this.localId}&mobi_app=${this.mobiApp}&platform=${this.platform}&s_locale=${this.Slocale}`;
+      return `appkey=${BilibiliToken.loginAppKey}&c_locale=${this.Clocale}&channel=${this.channel}&local_id=${this.localId}&mobi_app=${this.mobiApp}&platform=${this.platform}&s_locale=${this.Slocale}`;
     }
     static signQuery(params, ts = true, secretKey = this.__secretKey) {
       let paramsSort = params;
@@ -75,7 +76,7 @@
         headers: this.headers,
       });
       if (authCode !== undefined && authCode.response.status === 200 && authCode.body.code === 0)
-        return authCode.body.data.auth_code;
+        return authCode.body.data;
       return console.error(GM_info.script.name, 'getAuthCode', authCode);
     }
     async qrcodeConfirm(authCode, csrf) {
@@ -101,16 +102,16 @@
         responseType: 'json',
         headers: this.headers,
       });
+      console.log('[BilibiliDislike] poll', poll);
       if (poll !== undefined && poll.response.status === 200 && poll.body.code === 0)
         return poll.body.data;
-      return console.error(GM_info.script.name, 'qrcodePoll', poll);
     }
     async getToken() {
       const cookie = BilibiliToken._W.document.cookie.match(/bili_jct=(?<csrf>.*?);/);
       if (cookie === null || cookie.groups === undefined)
         return console.error(GM_info.script.name, 'getToken', 'cookie获取失败');
       const csrf = cookie.groups['csrf'];
-      const authCode = await this.getAuthCode();
+      const authCode = (await this.getAuthCode())?.auth_code;
       if (authCode === undefined) return;
       const confirm = await this.qrcodeConfirm(authCode, csrf);
       if (confirm === undefined) return;
@@ -353,9 +354,8 @@
     }
   }
 
-  GM_registerMenuCommand('重置 access_key', () => {
-    GM_deleteValue('access_key');
-    alert('刷新页面生效');
+  GM_registerMenuCommand('扫码登录', () => {
+    showLoginDialog();
   });
 
   const css = ([style]) => GM_addStyle(style);
@@ -364,22 +364,100 @@
     .video-dislike-icon {
       transform: scaleY(-1);
     }
+    .bvd-qr-dialog {
+      border-radius: 16px;
+    }
+    .bvd-qr-dialog-title,
+    .bvd-qr-dialog-content,
+    .bvd-qr-dialog-footer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 320px;
+    }
+    .bvd-qr-dialog-title,
+    .bvd-qr-dialog-footer {
+      margin: 32px 0;
+    }
+    .bvd-qr-dialog-title {
+      font-size: 18px;
+    }
+    .bvd-qr-dialog-footer {
+      flex-direction: row;
+      justify-content: space-evenly;
+    }
+    .bvd-qr-dialog-footer button {
+      font-size: 16px;
+      padding: 3px 9px;
+    }
   `;
 
   const client = new BilibiliToken();
 
-  let accessKey = '';
-  (async () => {
-    const saved = GM_getValue('access_key');
-    if (saved) {
-      accessKey = saved;
-      return;
-    }
-    const data = await client.getToken();
-    const val = data?.access_token;
-    if (val) GM_setValue('access_key', val);
-    accessKey = val;
-  })();
+  const showLoginDialog = async () => {
+    let data = await client.getAuthCode();
+    if (!data) return;
+
+    let polling = true;
+
+    const dialog = document.createElement('dialog');
+    dialog.classList.add('bvd-qr-dialog');
+
+    const title = dialog.appendChild(document.createElement('div'));
+    title.classList.add('bvd-qr-dialog-title');
+    title.textContent = '请使用哔哩哔哩手机客户端扫码登录';
+
+    const qrcodeContainer = dialog.appendChild(document.createElement('div'));
+    qrcodeContainer.classList.add('bvd-qr-dialog-content');
+    const qrcode = new QRCode(qrcodeContainer, {
+      text: data.url,
+      width: 192,
+      height: 192,
+      colorDark: '#000000',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.M,
+    });
+
+    const footer = dialog.appendChild(document.createElement('div'));
+    footer.classList.add('bvd-qr-dialog-footer');
+
+    const refreshBtn = footer.appendChild(document.createElement('button'));
+    refreshBtn.textContent = '刷新二维码';
+    refreshBtn.addEventListener('click', async () => {
+      const newData = await client.getAuthCode();
+      if (!newData) return;
+      data = newData;
+      qrcode.makeCode(data.url);
+    });
+
+    const closeBtn = footer.appendChild(document.createElement('button'));
+    closeBtn.textContent = '关闭';
+    closeBtn.addEventListener('click', () => {
+      polling = false;
+      dialog.close();
+      dialog.remove();
+    });
+
+    document.body.appendChild(dialog);
+    dialog.showModal();
+
+    const handleResult = accessKey => {
+      GM_setValue('access_key', accessKey);
+      dialog.close();
+      dialog.remove();
+    };
+
+    (async () => {
+      while (polling) {
+        const pollData = await client.qrcodePoll(data.auth_code).catch(console.error);
+        if (pollData) {
+          handleResult(pollData.access_token);
+          return;
+        }
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      }
+    })();
+  };
 
   const queryStringify = data =>
     Object.entries(data)
@@ -387,9 +465,10 @@
       .join('&');
 
   const dislike = async (isCancel = false) => {
+    const accessKey = GM_getValue('access_key');
     if (!accessKey) {
-      alert('access_key 尚未成功获取，功能不可用');
-      throw new Error('no access_key');
+      showToast('尚未获取 access_key，请点击脚本菜单中的“扫码登录”');
+      return;
     }
     const params = BilibiliToken.signQuery(
       queryStringify({
@@ -416,7 +495,7 @@
       responseType: 'json',
       headers: client.headers,
     });
-    console.log('[BilibiliDislike]', data);
+    console.log('[BilibiliDislike] dislike', data);
     return data.body;
   };
 
