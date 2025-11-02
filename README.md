@@ -4,6 +4,8 @@
   [![](https://img.shields.io/badge/dynamic/json?style=flat-square&color=%23990000&label=GreasyFork&query=total_installs&suffix=%20installs&url=https%3A%2F%2Fsleazyfork.org%2Fscripts%2F375992.json)](https://greasyfork.org/scripts/375992)
 - Twitter 图片查看增强  
   [![](https://img.shields.io/badge/dynamic/json?style=flat-square&color=%23990000&label=GreasyFork&query=total_installs&suffix=%20installs&url=https%3A%2F%2Fgreasyfork.org%2Fscripts%2F387918.json)](https://greasyfork.org/scripts/387918)
+- Twitter 移除内容警告  
+  [![](https://img.shields.io/badge/dynamic/json?style=flat-square&color=%23990000&label=GreasyFork&query=total_installs&suffix=%20installs&url=https%3A%2F%2Fgreasyfork.org%2Fscripts%2F492352.json)](https://greasyfork.org/scripts/492352)
 - Bilibili AntiBV  
   [![](https://img.shields.io/badge/dynamic/json?style=flat-square&color=%23990000&label=GreasyFork&query=total_installs&suffix=%20installs&url=https%3A%2F%2Fgreasyfork.org%2Fscripts%2F398499.json)](https://greasyfork.org/scripts/398499)
 - Bilibili 哔哩哔哩查看原图  
@@ -14,5 +16,5 @@
   [![](https://img.shields.io/badge/dynamic/json?style=flat-square&color=%23990000&label=GreasyFork&query=total_installs&suffix=%20installs&url=https%3A%2F%2Fgreasyfork.org%2Fscripts%2F436888.json)](https://greasyfork.org/scripts/436888)
 - Bilibili 哔哩哔哩视频点踩  
   [![](https://img.shields.io/badge/dynamic/json?style=flat-square&color=%23990000&label=GreasyFork&query=total_installs&suffix=%20installs&url=https%3A%2F%2Fgreasyfork.org%2Fscripts%2F487644.json)](https://greasyfork.org/scripts/487644)
-- Twitter 移除内容警告  
-  [![](https://img.shields.io/badge/dynamic/json?style=flat-square&color=%23990000&label=GreasyFork&query=total_installs&suffix=%20installs&url=https%3A%2F%2Fgreasyfork.org%2Fscripts%2F492352.json)](https://greasyfork.org/scripts/492352)
+- Bilibili 哔哩哔哩用户资料卡快捷拉黑  
+  [![](https://img.shields.io/badge/dynamic/json?style=flat-square&color=%23990000&label=GreasyFork&query=total_installs&suffix=%20installs&url=https%3A%2F%2Fgreasyfork.org%2Fscripts%2F554500.json)](https://greasyfork.org/scripts/554500)
