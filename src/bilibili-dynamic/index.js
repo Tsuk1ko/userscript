@@ -2,7 +2,7 @@
 // @name         Bilibili 哔哩哔哩阻止动态点击正文跳转
 // @icon         https://www.bilibili.com/favicon.ico
 // @namespace    https://lolicon.app/
-// @version      1.1.10
+// @version      1.2.0
 // @description  阻止动态点击正文跳转动态页面
 // @author       Jindai Kirin
 // @match        https://t.bilibili.com/*
@@ -18,91 +18,60 @@
   const css = ([style]) => GM_addStyle(style);
 
   css`
-    .description.active,
     .bili-dyn-content__orig__desc:not(
         .bili-dyn-content__orig.reference .bili-dyn-content__orig__desc
       ),
     .dyn-card-opus__summary:not(.bili-dyn-content__orig.reference .dyn-card-opus__summary),
-    .bili-dyn-content__forw__desc {
+    .bili-dyn-content__forw__desc,
+    .dyn-card-opus__title {
       cursor: unset !important;
     }
-    .bili-rich-text-emoji {
+    .bili-rich-text-emoji,
+    .opus-text-rich-emoji img {
       -webkit-user-drag: none;
-    }
-    .up-info-tip:hover {
-      color: #ff85ad !important;
-      cursor: pointer;
     }
   `;
 
   const contentSelector = [
-    '.bili-rich-text',
-    '.bili-rich-text__content',
-    '.content-full',
-    '.content-ellipsis',
-    '.content',
+    // 一般正文
+    '.dyn-card-opus__summary',
+    // 动态标题
+    '.dyn-card-opus__title',
+    // 视频正文
+    '.bili-dyn-content__orig__desc',
+    // 转发正文
+    '.bili-dyn-content__forw__desc',
   ].join(',');
+
   const skipSelector = [
-    '.bili-rich-text__action',
+    // 展开收起
+    '.dyn-card-opus__summary__action',
+    // 链接等
+    '.opus-text-rich-hl',
     '.bili-rich-text-module',
-    '.bili-rich-text-link',
+    // 话题
     '.bili-rich-text-topic',
-    '.bili-rich-text-viewpic',
-    '.dynamic-link-hover-bg',
   ].join(',');
 
   /**
    * @param {HTMLElement} element
-   * @param {string} className
    */
-  const hasClass = (element, className) => element.classList.contains(className);
-
-  /**
-   * @param {HTMLElement} element
-   */
-  const isContentElement = element =>
-    element.matches(contentSelector) && !hasClass(element.parentElement, 'user-panel');
-  /**
-   * @param {HTMLElement} element
-   */
-  const isSkipElement = element => element.matches(skipSelector);
-  /**
-   * @param {HTMLElement} element
-   */
-  const isNeedClickParentElement = element => hasClass(element, 'lottery-btn');
+  const isSkipElement = element => element.closest(skipSelector);
 
   document.addEventListener(
     'click',
     e => {
-      /** @type {HTMLElement} */
-      const $el = e.target;
+      const el = e.target;
+      if (!(el instanceof HTMLElement)) return;
+
       // 不处理动态链接
-      if (isSkipElement($el)) return;
-      // 扩大互动抽奖按钮点击范围（B站自己就没处理好，原本点 icon 是不能打开抽奖面板的）
-      if (isNeedClickParentElement($el)) {
-        e.stopPropagation();
-        e.preventDefault();
-        $el.parentElement.click();
-        return;
-      }
-      // 提供转发原文跳转到动态页面的方式
-      if (hasClass($el, 'up-info-tip')) {
-        try {
-          const did = $el.parentElement.parentElement.parentElement.getAttribute('data-ori-did');
-          if (did) window.open(`https://t.bilibili.com/${did}?tab=2`, '_blank');
-        } catch (e) {
-          console.error(e);
-        }
-      }
-      // 触发路径
-      const path = e.composedPath();
-      // 转发内容不处理，因为现在无法通过页面元素得到 dynamic id
-      for (const ele of path) {
-        if (ele.nodeName === 'BODY') break;
-        if (ele.matches('.bili-dyn-content__orig.reference')) return;
-      }
+      if (isSkipElement(el)) return;
+
+      // 转发内容不处理，因为没有其他适合的途径打开转发原文
+      if (el.closest('.bili-dyn-content__orig.reference')) return;
+
       // 阻止点击正文跳转到动态页面
-      if (isContentElement($el) || isContentElement(path[1])) {
+      if (el.closest(contentSelector)) {
         e.stopPropagation();
       }
     },
