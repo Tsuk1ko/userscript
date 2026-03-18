@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         少前2莱娅的热力运动一键脚本
 // @namespace    https://github.com/Tsuk1ko
-// @version      1.0.0
+// @version      1.0.1
 // @description  一键完成少前2莱娅的热力运动网页活动
 // @author       神代綺凛
 // @match        https://gf2.sunborngame.com/lydrlyd/*
@@ -117,7 +117,7 @@
       };
     });
 
-    const { list } = await request('lottery/history_list', { page_num: 1, page_size: 100 });
+    const { list } = await request('lottery/history_list', { page_num: 1, page_size: 200 });
     list.forEach(({ reward_id }) => {
       const item = items[reward_id];
       if (!item) return;
