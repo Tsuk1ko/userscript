@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         少前2莱娅的热力运动一键脚本
 // @namespace    https://github.com/Tsuk1ko
-// @version      1.0.1
+// @version      1.0.2
 // @description  一键完成少前2莱娅的热力运动网页活动
 // @author       神代綺凛
 // @match        https://gf2.sunborngame.com/lydrlyd/*
@@ -98,7 +98,7 @@
       '转录导体·序四*4',
       '转录导体·序五*3',
       '转录导体·序六*2',
-      '塌缩晶条*66',
+      '坍塌晶条*66',
       '接入密匙*2',
       '专访许可*1',
       '基原信息核*1',
@@ -124,13 +124,20 @@
       item.count++;
     });
 
-    const resultList = items
-      .filter(item => item.count > 0)
-      .map(({ name, num, count }) => [name, num * count]);
+    const resultMap = {};
 
-    console.table(Object.fromEntries(resultList));
+    items.forEach(({ name, num, count }) => {
+      if (count > 0) {
+        resultMap[name] = (resultMap[name] || 0) + num * count;
+      }
+    });
 
-    const result = resultList.map(([name, count]) => `${name} * ${count}`).join('\n');
+    console.table(resultMap);
+
+    const result = Object.entries(resultMap)
+      .map(([name, count]) => `${name} * ${count}`)
+      .join('\n');
+
     alert(result);
   }
 
