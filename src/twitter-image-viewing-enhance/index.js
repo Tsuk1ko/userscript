@@ -4,7 +4,7 @@
 // @name:zh-TW   Twitter 圖像查看增強
 // @icon         https://twitter.com/favicon.ico
 // @namespace    https://moe.best/
-// @version      1.4.0
+// @version      1.4.1
 // @description        Make Twitter photo viewing more humane
 // @description:zh-CN  让推特图片浏览更加人性化
 // @description:zh-TW  讓 Twitter 照片瀏覽更人性化
@@ -80,9 +80,7 @@ Please refresh to take effect after modification.`);
         d70740d9: 'next',
         d70740da: 'next',
       };
-      const i18nModule = webpackChunk_twitter_responsive_web.find(([[id]]) =>
-        id === 82990
-      );
+      const i18nModule = webpackChunk_twitter_responsive_web.find(([[id]]) => id === 82990);
       Object.values(i18nModule[1]).forEach(fn => {
         if (fn.length < 3) return;
         try {
