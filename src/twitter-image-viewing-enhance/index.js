@@ -80,8 +80,8 @@ Please refresh to take effect after modification.`);
         d70740d9: 'next',
         d70740da: 'next',
       };
-      const i18nModule = webpackChunk_twitter_responsive_web.find(([[name]]) =>
-        name.startsWith('i18n')
+      const i18nModule = webpackChunk_twitter_responsive_web.find(([[id]]) =>
+        id === 82990
       );
       Object.values(i18nModule[1]).forEach(fn => {
         if (fn.length < 3) return;
