@@ -4,7 +4,7 @@
 // @name:zh-TW   Twitter 圖像查看增強
 // @icon         https://twitter.com/favicon.ico
 // @namespace    https://moe.best/
-// @version      1.4.1
+// @version      1.5.0
 // @description        Make Twitter photo viewing more humane
 // @description:zh-CN  让推特图片浏览更加人性化
 // @description:zh-TW  讓 Twitter 照片瀏覽更人性化
@@ -80,7 +80,24 @@ Please refresh to take effect after modification.`);
         d70740d9: 'next',
         d70740da: 'next',
       };
-      const i18nModule = webpackChunk_twitter_responsive_web.find(([[id]]) => id === 82990);
+
+      const scripts = [...document.querySelectorAll('script')];
+
+      const i18nSrc = scripts.find(script => script.src.includes('/i18n/'))?.src;
+      if (!i18nSrc) throw new Error('i18n script not found');
+
+      const i18nKey = i18nSrc.match(/\/(i18n\/[^.]+)/)?.[1];
+      if (!i18nKey) throw new Error('i18n key not found');
+
+      const initScriptContent = scripts.find(script =>
+        script.textContent.includes('window.__SCRIPTS_LOADED__')
+      )?.textContent;
+      if (!initScriptContent) throw new Error('init script not found');
+
+      const i18nModuleId = Number(initScriptContent.match(new RegExp(`(\\d+):"${i18nKey}"`))?.[1]);
+      if (!i18nModuleId) throw new Error('i18n module id not found');
+
+      const i18nModule = webpackChunk_twitter_responsive_web.find(([[id]]) => id === i18nModuleId);
       Object.values(i18nModule[1]).forEach(fn => {
         if (fn.length < 3) return;
         try {
