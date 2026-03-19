@@ -1,12 +1,11 @@
 // ==UserScript==
 // @name         少前2莱娅的热力运动一键脚本
 // @namespace    https://github.com/Tsuk1ko
-// @version      1.0.2
+// @version      1.0.3
 // @description  一键完成少前2莱娅的热力运动网页活动
 // @author       神代綺凛
 // @match        https://gf2.sunborngame.com/lydrlyd/*
 // @icon         https://favicon.im/gf2.sunborngame.com
-// @require      https://unpkg.com/js-md5@0.8.3/src/md5.js
 // @license      MIT
 // @grant        none
 // ==/UserScript==
