@@ -4,7 +4,7 @@
 // @name:zh-TW   Twitter 圖像查看增強
 // @icon         https://twitter.com/favicon.ico
 // @namespace    https://moe.best/
-// @version      1.5.0
+// @version      1.6.0
 // @description        Make Twitter photo viewing more humane
 // @description:zh-CN  让推特图片浏览更加人性化
 // @description:zh-TW  讓 Twitter 照片瀏覽更人性化
@@ -140,16 +140,20 @@ Please refresh to take effect after modification.`);
         else if (deltaY > 0) nextImg();
       }
     },
-    { passive: true }
+    { capture: true, passive: true }
   );
 
   if (enableDragToSwitch) {
     let x = 0;
     let y = 0;
-    window.addEventListener('mousedown', ({ clientX, clientY }) => {
-      x = clientX;
-      y = clientY;
-    });
+    window.addEventListener(
+      'mousedown',
+      ({ clientX, clientY }) => {
+        x = clientX;
+        y = clientY;
+      },
+      { capture: true, passive: true }
+    );
     window.addEventListener(
       'mouseup',
       ({ button, clientX, clientY, target }) => {
@@ -162,7 +166,7 @@ Please refresh to take effect after modification.`);
           else if (mx < 0) nextImg();
         }
       },
-      { passive: true }
+      { capture: true, passive: true }
     );
   } else {
     document.addEventListener(
