@@ -4,7 +4,7 @@
 // @name:zh-TW   Twitter 圖像查看增強
 // @icon         https://twitter.com/favicon.ico
 // @namespace    https://moe.best/
-// @version      1.6.0
+// @version      1.6.1
 // @description        Make Twitter photo viewing more humane
 // @description:zh-CN  让推特图片浏览更加人性化
 // @description:zh-TW  讓 Twitter 照片瀏覽更人性化
@@ -19,8 +19,10 @@
 // @run-at       document-end
 // ==/UserScript==
 
-(() => {
+(async () => {
   'use strict';
+
+  const sleep = (ms = 0) => new Promise(resolve => setTimeout(resolve, ms));
 
   // 滑动切换图片
   let enableDragToSwitch = GM_getValue('enableDragToSwitch', false);
@@ -97,7 +99,14 @@ Please refresh to take effect after modification.`);
       const i18nModuleId = Number(initScriptContent.match(new RegExp(`(\\d+):"${i18nKey}"`))?.[1]);
       if (!i18nModuleId) throw new Error('i18n module id not found');
 
-      const i18nModule = webpackChunk_twitter_responsive_web.find(([[id]]) => id === i18nModuleId);
+      const i18nModule = await (async () => {
+        for (let i = 0; i < 100; i++) {
+          const module = webpackChunk_twitter_responsive_web.find(([[id]]) => id === i18nModuleId);
+          if (module) return module;
+          await sleep(100);
+        }
+        throw new Error('i18n module not found');
+      })();
       Object.values(i18nModule[1]).forEach(fn => {
         if (fn.length < 3) return;
         try {
