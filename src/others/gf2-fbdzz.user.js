@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         少前2缝补大作战一键脚本
 // @namespace    https://github.com/Tsuk1ko
-// @version      1.0.0
+// @version      1.0.1
 // @description  一键完成少前2缝补大作战网页活动
 // @author       神代綺凛
 // @match        https://gf2.sunborngame.com/amhfbdzz/*
@@ -106,7 +106,7 @@
       '番茄大王的袋子&1',
     ].map(itemName => {
       const [nameAndNum, numStr] = itemName.split('&');
-      const name = nameAndNum.split('*')[0];
+      const name = nameAndNum.split(/\*|x/)[0];
       return {
         name,
         num: Number(numStr),
